@@ -1,0 +1,207 @@
+﻿<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="jquery-3.0.0.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+    <script type="text/javascript" src="functions.js"></script>
+    <script type="text/javascript">
+
+        var Debug = false;
+
+        $(document).ready(function () { Init(); });
+
+        function Init()
+        {
+            LoadVariables();
+            CalculateCalories();
+        }
+
+        function CalculateCalories()
+        {
+            var gender = null;
+
+            if ($('#male').is(':checked'))
+                gender = 'male';
+            else if ($('#female').is(':checked'))
+                gender = 'female';
+
+            var age = $('#age').val();
+            var height = $('#height').val();
+            var weight = $('#weight').val();
+            var activity = $("#activity").val();
+            
+            if (age == '' || height == '' || weight == '')
+            {
+                $('#keep').html('?');
+                $('#gain').html('?');
+                $('#lose').html('?');
+
+                return;
+            }
+
+            var gender_factor = 0;
+            if (gender == 'male')
+                gender_factor = 5;
+            else if (gender == 'female')
+                gender_factor = -161;
+
+            var activity_factor = 0;
+            if (activity == 'none')
+                activity_factor = 1.0;
+            else if (activity == 'sedentary')
+                activity_factor = 1.2;
+            else if (activity == 'light')
+                activity_factor = 1.375;
+            else if (activity == 'moderate')
+                activity_factor = 1.55;
+            else if (activity == 'very')
+                activity_factor = 1.75;
+            else if (activity == 'extra')
+                activity_factor = 1.9;
+
+            var bmr = ((10 * weight) + (6.25 * height) - (5 * age) + gender_factor) * activity_factor;
+
+            var calories_per_kg = 7700;
+
+            var calories_keep = Math.ceil(bmr);
+            var calories_gain = Math.ceil(bmr + (calories_per_kg / 7));
+            var calories_lose = Math.ceil(bmr - (calories_per_kg / 7));
+
+            $('#keep').html(calories_keep);
+            $('#gain').html(calories_gain);
+            $('#lose').html(calories_lose);
+
+            SaveVariables(gender, age, height, weight, activity);
+            
+            if (Debug)
+            {
+                $('#debug').html
+                (
+                    'gender=' + gender + '<br/>' +
+                    'age=' + age + '<br/>' +
+                    'height=' + height + '<br/>' +
+                    'weight=' + weight + '<br/>' +
+                    'activity=' + activity + '<br/>' +
+                    'gender_factor=' + gender_factor + '<br/>' +
+                    'activity_factor=' + activity_factor + '<br/>' +
+                    'bmr=' + bmr + '<br/>' +
+                    'calories_per_kg=' + calories_per_kg + '<br/>' +
+                    'calories_keep=' + calories_keep + '<br/>' +
+                    'calories_gain=' + calories_gain + '<br/>' +
+                    'calories_lose=' + calories_lose
+                );
+            }
+        }
+
+        function SaveVariables(gender, age, height, weight, activity)
+        {
+            SaveData("gender", gender)
+            SaveData("age", age)
+            SaveData("height", height)
+            SaveData("weight", weight)
+            SaveData("activity", activity)
+        }
+
+        function LoadVariables()
+        {
+            var gender = LoadData("gender");
+            var age = LoadData("age");
+            var height = LoadData("height");
+            var weight = LoadData("weight");
+            var activity = LoadData("activity");
+
+            if (gender == 'male')
+                $('#male').prop("checked", true);
+            else if (gender == 'female')
+                $('#female').prop("checked", true);
+
+            $('#age').val(age);
+            $('#height').val(height);
+            $('#weight').val(weight);
+            $("#activity").val(activity);
+        }
+
+    </script>
+</head>
+<body>
+    <div id="title">
+        <table id="title">
+            <tr>
+                <td><button class="titlebtn" onclick="MainMenu()">Back</button></td>
+                <td><span id="title">Diet Planner</span></td>
+                <td><button class="titlebtn_hidden">Exit</button></td>
+            </tr>
+        </table>
+    </div>
+    <div id="pagetitle">
+        Calorie Calculator
+    </div>
+    <div id="content">
+        <table id="tblcaloriecalc" border="0" style="width:100%;">
+            <tr>
+                <td>Gender</td>
+                <td>
+                    <label for="male">Male</label>
+                    <input type="radio" name="gender" id="male" value="male" checked="checked">
+                    <label for="female">Female</label>
+                    <input type="radio" name="gender" id="female" value="female">
+                </td>
+            </tr>
+            <tr>
+                <td>Age</td>
+                <td>
+                    <input type="number" id="age" class="calcvar"> yrs
+                </td>
+            </tr>
+            <tr>
+                <td>Height</td>
+                <td>
+                    <input type="number" id="height" class="calcvar"> cm
+                </td>
+            </tr>
+            <tr>
+                <td>Weight</td>
+                <td>
+                    <input type="number" id="weight" class="calcvar"> kg
+                </td>
+            </tr>
+            <tr>
+                <td>Activity Level</td>
+                <td>
+                    <select id="activity">
+                        <option value="none" selected>None</option>
+                        <option value="sedentary" selected>Sedentary</option>
+                        <option value="light">Lightly active</option>
+                        <option value="moderate">Moderately active</option>
+                        <option value="very">Very active</option>
+                        <option value="extra">Extra active</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="calcbtn" onclick="CalculateCalories()" style="width:100%;">Calculate</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    
+                    <table id="results" border="1" style="width:100%;">
+                        <tr><th>Objective</th><th>Calories Needed</th></tr>
+
+                        <tr><td>Maintain weight</td>   <td class="kcal_needed" id="keep">?</td></tr>
+                        <tr><td>Gain 1kg per week</td> <td class="kcal_needed" id="gain">?</td></tr>
+                        <tr><td>Lose 1kg per week</td> <td class="kcal_needed" id="lose">?</td></tr>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div id="debug" style="color: #f00;"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

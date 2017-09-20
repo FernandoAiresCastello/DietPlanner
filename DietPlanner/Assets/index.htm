@@ -1,0 +1,41 @@
+﻿<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="jquery-3.0.0.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+    <script type="text/javascript" src="functions.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () { Init(); });
+
+        function Init()
+        {
+            CommonInit();
+        }
+
+    </script>
+</head>
+<body>
+    <div id="title">
+        <table id="title">
+            <tr>
+                <td><button class="titlebtn_hidden" onclick="MainMenu()">Back</button></td>
+                <td><span id="title">Diet Planner</span></td>
+                <td><button class="titlebtn_hidden">Exit</button></td>
+            </tr>
+            <tr>
+                <td colspan="3"><span id="attribution">By Fernando Aires Castello</span></td>
+            </tr>
+        </table>
+    </div>
+    <div id="pagetitle">
+        Main Menu
+    </div>
+    <div id="content">
+        <button class="menubtn" onclick="CalorieCalculator()">Calorie Calculator</button>
+        <button class="menubtn_disabled" onclick="FoodListing()">Food Listing</button>
+        <button class="menubtn_disabled" onclick="DietProgression()">Diet Progression</button>
+        <button class="menubtn_disabled" onclick="DailyMenu()">Daily Menu</button>
+    </div>
+</body>
+</html>
